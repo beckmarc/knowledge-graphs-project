@@ -1,0 +1,25 @@
+<div>
+    <h1>Guided Tour Museums</h1>
+    <p>Click on a Museum Card to start the guided Tour. <br>(Shown are only museums that have more than 1 Million annual visitors)</p>
+    <div class="museums-container">
+        
+        <mat-card 
+            class="museum-card" 
+            appearance="raised" 
+            *ngFor="let m of museums" 
+            [routerLink]="'/museums/' + m.museum.value.substring(28)"
+        >
+            
+            <img mat-card-image src="{{m.thumbnail.value}}">
+            
+            <mat-card-header>
+                <mat-card-title>{{m.name.value}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p>
+                  {{m.abstract.value}}
+                </p>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+h1 {
+    text-align: center;
+    margin: 30px 0;
+    font-size: 30px;
+}
+
+p {
+    text-align: center;
+    color: gray;
+}
+
+mat-card {
+    max-width: 300px;
+    margin: 20px;
+    cursor: pointer;
+}
+
+mat-card img{
+    object-fit: cover; /*this makes the image in src fit to the size specified below*/
+    width: 100%; /* Here you can use wherever you want to specify the width and also the height of the <img>*/
+    height: 200px;
+}
+
+mat-card-content {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+mat-card:hover {
+    background-color: lightgray;
+}
+
+.museums-container {
+    display: inline-flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+::ng-deep .mat-card-header-text {
+    margin-left: 0 !important;
+}

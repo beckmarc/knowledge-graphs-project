@@ -1,0 +1,28 @@
+<div *ngIf="museum" class="main">
+    <div class="header">
+        <div>
+            <h1>Welcome to the virtual {{museum.name.value}}!</h1>
+            <p>{{museum.abstract.value}}</p>
+        </div>    
+        <img src="{{museum.thumbnail.value}}">
+    </div>
+    <div>
+        <h2>Select an Art Piece that you want to look at:</h2>
+        <div class="art-container">
+            <mat-card 
+                class="art-card" 
+                appearance="raised"
+                *ngFor="let art of artPieces" 
+                [routerLink]="'/museums/' + museumId + '/art/' + art.art.value.substring(28)"
+            >
+            <mat-card-header>
+                <mat-card-title>{{art.rdfsLabel.value}}</mat-card-title>
+            </mat-card-header>
+                
+                <img mat-card-image src="{{art.dboThumbnail.value}}">
+                
+                
+            </mat-card>
+        </div>
+    </div>
+</div>
