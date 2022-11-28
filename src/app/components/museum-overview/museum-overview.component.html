@@ -1,12 +1,18 @@
-<div>
-    <h1>Guided Tour Museums</h1>
-    <p>Click on a Museum Card to start the guided Tour. <br>(Shown are only museums that have more than 1 Million annual visitors)</p>
+<div class="main">
+    <h1>Interconnected Virtual Tours - Art Museums</h1>
+    <!-- <p>Click on a Museum Card to start the guided Tour. <br>(Shown are only museums that have more than 1 Million annual visitors)</p> -->
+    <div>
+        <mat-form-field class="search-input" appearance="fill">
+            <mat-label>Search...</mat-label>
+            <input type="text" [ngModel]="searchTerm" (ngModelChange)="updateSearch($event)" matInput placeholder="e.g. Louvre">
+        </mat-form-field>
+    </div>
     <div class="museums-container">
         
         <mat-card 
             class="museum-card" 
             appearance="raised" 
-            *ngFor="let m of museums" 
+            *ngFor="let m of filteredMuseums" 
             [routerLink]="'/museums/' + m.museum.value.substring(28)"
         >
             

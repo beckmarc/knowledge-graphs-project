@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Art } from '../../model/art';
 import { Museum } from '../../model/museum';
 import { QueryService } from '../../services/query.service';
+import { SharedService } from '../../services/shared.service';
 
 @Component({
   selector: 'app-museum-detail',
@@ -30,13 +31,20 @@ export class MuseumDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private queryService: QueryService
+    private queryService: QueryService,
+    private shared: SharedService
   ) { }
 
   async ngOnInit(): Promise<void> {
     this.museumId = this.route.snapshot.params.id;
     this.museum = (await this.queryService.findMuseumDetail(this.museumId));
     this.artPieces = await this.queryService.findArtOfMuseum(this.museumId);
+    this.shared.breadcrumbs = [
+      {
+        name: this.museum.name.value,
+        link: 'museums/' + this.museumId
+      }
+    ]
   }
 
   async applyFilters() {

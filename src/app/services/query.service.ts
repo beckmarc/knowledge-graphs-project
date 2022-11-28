@@ -31,6 +31,40 @@ export class QueryService {
       return this.http.get<RDFData<T>>(this.serviceUrl, options).toPromise()
   }
 
+  async findArtDetail(id: string, filters?: any): Promise<Art>{
+    id = `<http://dbpedia.org/resource/${id}>`;
+    const query = `
+    select distinct ?dboAbstract, ?dboThumbnail, ?rdfsLabel
+    where {
+      ${id} rdfs:label ?rdfsLabel FILTER (langMatches(lang(?rdfsLabel),"en")) .
+      ${id} dbo:thumbnail ?dboThumbnail .
+      ${id} dbo:abstract ?dboAbstract FILTER (langMatches(lang(?dboAbstract),"en"))
+    }
+    `;
+    const queryResult = (await this.getRDF<Art>(query));
+    console.log(queryResult.results.bindings);
+    return queryResult.results.bindings[0];
+  }
+
+  async findArtOfArtist(id: string, filters?: any): Promise<Art[]>{
+    id = `<http://dbpedia.org/resource/${id}>`;
+    const query = `
+    select distinct ?art, ?dboThumbnail, ?rdfsLabel, ?dboAuthor
+    where {
+      ${id} dbo:author $author .
+      ?art dbo:author $author .
+      ?art dbo:abstract ?dboAbstract .
+      ?art dbo:thumbnail ?dboThumbnail .
+      ?art rdfs:label ?rdfsLabel .
+      FILTER (langMatches(lang(?rdfsLabel ),"en"))
+      FILTER (${id} != $art)
+    }
+    `;
+    const queryResult = (await this.getRDF<Art>(query));
+    console.log(queryResult.results.bindings);
+    return queryResult.results.bindings;
+  }
+
   async findArtOfMuseum(id: string, filters?: any): Promise<Art[]>{
     id = `<http://dbpedia.org/resource/${id}>`;
     const query = `
@@ -59,11 +93,13 @@ export class QueryService {
     SELECT DISTINCT ?museum, ?name, ?thumbnail, ?abstract
     WHERE {  
     ?museum dbo:type dbr:Art_museum .
-    ?museum dbo:numberOfVisitors ?visitorAmount FILTER(?visitorAmount > 1000000) .
     ?museum rdfs:label ?name FILTER (langMatches(lang(?name),"en")) .
     ?museum dbo:thumbnail ?thumbnail .
     ?museum dbo:abstract ?abstract FILTER (langMatches(lang(?abstract),"en"))
+    OPTIONAL {?art dbo:museum ?museum . }
+    FILTER(BOUND(?art) )
     }
+    ORDER BY ASC(?name)
     `;
     const queryResult = (await this.getRDF<Museum>(query));
     console.log(queryResult.results.bindings);

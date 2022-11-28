@@ -1,7 +1,10 @@
 h1 {
-    text-align: center;
-    margin: 30px 0;
+    margin: 0 0 50px 0;
     font-size: 30px;
+}
+
+.main {
+    padding: 30px;
 }
 
 p {
@@ -9,10 +12,14 @@ p {
     color: gray;
 }
 
-mat-card {
-    margin: 20px;
-    cursor: pointer;
+.search-input {
     width: 300px;
+}
+
+mat-card {
+    margin: 0 30px 30px 0;
+    cursor: pointer;
+    width: 250px;
 }
 
 mat-card img{
@@ -32,7 +39,6 @@ mat-card:hover {
 .museums-container {
     display: inline-flex;
     flex-flow: row wrap;
-    justify-content: center;
 }
 
 ::ng-deep .mat-card-header-text {

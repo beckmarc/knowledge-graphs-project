@@ -1,1 +1,51 @@
-<p>art-detail-view works!</p>
+<div *ngIf="artPiece" class="main">
+    <div class="header">
+        <h1>{{artPiece.rdfsLabel.value}}</h1>
+        <div style="display:flex">
+            <img src="{{artPiece.dboThumbnail.value}}">
+            <p style="margin-left: 30px;">{{artPiece.dboAbstract.value}}</p>
+        </div>    
+        
+    </div>
+    <mat-accordion>
+        <mat-expansion-panel (opened)="panelOpenState = true"
+                             (closed)="panelOpenState = false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Show other art of this artist
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="art-container">
+                <mat-card 
+                    class="art-card" 
+                    appearance="raised" 
+                    *ngFor="let m of otherArtOfArtist" 
+                >
+                
+                    <img mat-card-image src="{{m.dboThumbnail.value}}" alt=" Photo of {{m.rdfsLabel.value}}">
+                    <mat-card-header>
+                      <mat-card-title>{{m.rdfsLabel.value}}</mat-card-title>
+                  </mat-card-header>
+                    
+                </mat-card>
+            
+          </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Show Art with similar dimensions
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>I'm visible because I am open</p>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Show Art from the similar times
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <p>I'm visible because I am open</p>
+        </mat-expansion-panel>
+    </mat-accordion>
+</div>
