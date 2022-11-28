@@ -10,19 +10,18 @@ p {
 }
 
 mat-card {
-    max-width: 300px;
     margin: 20px;
     cursor: pointer;
+    width: 300px;
 }
 
 mat-card img{
     object-fit: cover; /*this makes the image in src fit to the size specified below*/
-    width: 100%; /* Here you can use wherever you want to specify the width and also the height of the <img>*/
     height: 200px;
 }
 
 mat-card-content {
-    height: 200px;
+    height: 150px;
     overflow-y: scroll;
 }
 

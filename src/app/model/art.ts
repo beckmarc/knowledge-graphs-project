@@ -7,5 +7,6 @@ export interface Art {
     dboAuthorUri: RDFValue;
     dboAuthorDbpLabel: RDFValue;
     dboThumbnail: RDFValue;
+    dbpYear: RDFValue;
     rdfsLabel: RDFValue;
 }

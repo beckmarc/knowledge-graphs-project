@@ -31,20 +31,22 @@ export class QueryService {
       return this.http.get<RDFData<T>>(this.serviceUrl, options).toPromise()
   }
 
-  async findArtOfMuseum(id: string): Promise<Art[]>{
+  async findArtOfMuseum(id: string, filters?: any): Promise<Art[]>{
     id = `<http://dbpedia.org/resource/${id}>`;
     const query = `
-    select distinct ?art, ?dboAbstract, ?dboThumbnail, ?rdfsLabel, ?dboAuthor
+    select distinct ?art, ?dboAbstract, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, ?dbpYear
     where {
       ?art dbo:museum ${id} .
       ?art dbo:abstract ?dboAbstract .
       ?art dbo:thumbnail ?dboThumbnail .
-      ?art rdfs:label ?rdfsLabel  .
+      ?art rdfs:label ?rdfsLabel .
+      ?art dbp:year ?dbpYear .
       optional {
       ?art dbo:author ?dboAuthor
       }.
       FILTER (langMatches(lang(?dboAbstract),"en"))
       FILTER (langMatches(lang(?rdfsLabel ),"en"))
+      ${filters ? `FILTER (?dbpYear >= ${filters.startYear} && ?dbpYear <= ${filters.endYear})` : ''}
     }
     `;
     const queryResult = (await this.getRDF<Art>(query));

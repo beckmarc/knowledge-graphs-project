@@ -12,6 +12,11 @@ import {MatCardModule} from '@angular/material/card';
 import { MuseumDetailComponent } from './components/museum-detail/museum-detail.component';
 import { RouterModule } from '@angular/router';
 import { ArtDetailViewComponent } from './components/art-detail-view/art-detail-view.component';
+import {MatSliderModule} from '@angular/material/slider';
+import {MatSelectModule} from '@angular/material/select';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import {MatButtonModule} from '@angular/material/button';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +26,11 @@ import { ArtDetailViewComponent } from './components/art-detail-view/art-detail-
   ],
   imports: [
     MatCardModule,
+    MatSliderModule,
+    NgxSliderModule,
+    MatButtonModule,
     BrowserModule,
+    MatSelectModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,

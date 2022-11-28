@@ -24,21 +24,27 @@ hr {
     color: rgb(231, 231, 231);
 }
 
+.filter-bar {
+    display: flex;
+
+    .year-filter {
+        width: 100%;
+    }
+}
+
 mat-card {
-    max-width: 160px;
+    width: 160px;
     margin: 20px;
     cursor: pointer;
 }
 
 mat-card img{
-    object-fit: cover; /*this makes the image in src fit to the size specified below*/
-    width: 100%; /* Here you can use wherever you want to specify the width and also the height of the <img>*/
+    object-fit: contain; /*this makes the image in src fit to the size specified below*/
     height: 200px;
 }
 
 mat-card-content {
-    height: 200px;
-    overflow-y: scroll;
+    // max-height: 100px;
 }
 
 mat-card:hover {
@@ -53,4 +59,15 @@ mat-card:hover {
 
 ::ng-deep .mat-card-header-text {
     margin-left: 0 !important;
+}
+
+mat-slider {
+    width: 300px;
+}
+
+.result-message {
+    color: gray;
+    margin-top: 15px;
+    font-style: italic;
+    font-size: 16px;
 }

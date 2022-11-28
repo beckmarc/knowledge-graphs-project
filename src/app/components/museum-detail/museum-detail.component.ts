@@ -1,3 +1,4 @@
+import { Options } from '@angular-slider/ngx-slider';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Art } from '../../model/art';
@@ -15,6 +16,18 @@ export class MuseumDetailComponent implements OnInit {
   museum!: Museum;
   artPieces: Art[] = [];
 
+  selectedArtType!: String;
+  startYear: number = 1400;
+  endYear: number = 2100;
+  options: Options = {
+    floor: 1400,
+    ceil: 2100
+  };
+
+  timeOut!: any;
+  timeOutDuration = 300;
+
+
   constructor(
     private route: ActivatedRoute,
     private queryService: QueryService
@@ -26,4 +39,11 @@ export class MuseumDetailComponent implements OnInit {
     this.artPieces = await this.queryService.findArtOfMuseum(this.museumId);
   }
 
+  async applyFilters() {
+    this.artPieces = await this.queryService.findArtOfMuseum(this.museumId, {startYear: this.startYear, endYear: this.endYear});
+  }
+
+  async removeFilters() {
+    this.artPieces = await this.queryService.findArtOfMuseum(this.museumId);
+  }
 }

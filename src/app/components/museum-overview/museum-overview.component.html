@@ -10,16 +10,16 @@
             [routerLink]="'/museums/' + m.museum.value.substring(28)"
         >
             
-            <img mat-card-image src="{{m.thumbnail.value}}">
+            <img width="300" mat-card-image src="{{m.thumbnail.value}}" alt=" Photo of {{m.name.value}}">
             
             <mat-card-header>
                 <mat-card-title>{{m.name.value}}</mat-card-title>
             </mat-card-header>
-            <mat-card-content>
+            <!-- <mat-card-content>
                 <p>
                   {{m.abstract.value}}
                 </p>
-            </mat-card-content>
+            </mat-card-content> -->
         </mat-card>
     </div>
 </div>
