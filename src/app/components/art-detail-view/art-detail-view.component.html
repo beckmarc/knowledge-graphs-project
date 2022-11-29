@@ -1,9 +1,25 @@
 <div *ngIf="artPiece" class="main">
     <div class="header">
         <h1>{{artPiece.rdfsLabel.value}}</h1>
-        <div style="display:flex">
+        <div style="display:flex;">
             <img src="{{artPiece.dboThumbnail.value}}">
-            <p style="margin-left: 30px;">{{artPiece.dboAbstract.value}}</p>
+            <div style="margin-left: 30px;">
+              <p >
+                {{artPiece.dboAbstract.value}}
+              </p>
+              <hr>
+              <p>
+                <b>Artist:</b> {{artPiece.dbpAuthorName?.value || 'n.a.'}}  <br>
+                <b>Year:</b> {{artPiece.dbpYear?.value || 'n.a.'}} <br>
+                <b>City:</b> {{artPiece.dbpCityName?.value || 'n.a.'}} <br>
+                <ng-container *ngIf="artPiece.dbpWidthMetric && artPiece.dbpHeightMetric">
+                  <b>Width:</b> {{artPiece.dbpWidthMetric?.value}} {{artPiece.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}<br>
+                  <b>Height:</b> {{artPiece.dbpHeightMetric?.value}} {{artPiece.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}
+                </ng-container>
+                
+              </p>
+            </div>
+            
         </div>    
         
     </div>
@@ -12,7 +28,7 @@
                              (closed)="panelOpenState = false">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              Show other art of this artist
+              Show other art of this artist ({{artPiece.dbpAuthorName?.value}})
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div class="art-container">
@@ -20,12 +36,19 @@
                     class="art-card" 
                     appearance="raised" 
                     *ngFor="let m of otherArtOfArtist" 
+                    [routerLink]="'/museums/' + m.dboMuseum.value.substring(28) + '/art/' + m.art.value.substring(28)"
                 >
                 
                     <img mat-card-image src="{{m.dboThumbnail.value}}" alt=" Photo of {{m.rdfsLabel.value}}">
                     <mat-card-header>
                       <mat-card-title>{{m.rdfsLabel.value}}</mat-card-title>
                   </mat-card-header>
+                  <mat-card-content>
+                    <p>
+                        <b>Museum:</b> {{m.dbpMuseumName?.value || 'n.a.'}}  <br>
+                        
+                    </p>
+                </mat-card-content>
                     
                 </mat-card>
             
@@ -37,7 +60,31 @@
               Show Art with similar dimensions
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <p>I'm visible because I am open</p>
+          <div class="art-container">
+              <mat-card 
+                  class="art-card" 
+                  appearance="raised" 
+                  *ngFor="let m of artWithSimilarDim" 
+                  [routerLink]="'/museums/' + m.dboMuseum.value.substring(28) + '/art/' + m.art.value.substring(28)"
+              >
+              
+                  <img mat-card-image src="{{m.dboThumbnail.value}}" alt=" Photo of {{m.rdfsLabel.value}}">
+                  <mat-card-header>
+                    <mat-card-title>{{m.rdfsLabel.value}}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <p>
+                      <b>Museum:</b> {{m.dbpMuseumName?.value || 'n.a.'}}  <br>
+                      <ng-container *ngIf="artPiece.dbpWidthMetric && artPiece.dbpHeightMetric">
+                        <b>Width:</b> {{m.dbpWidthMetric?.value}} {{m.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}<br>
+                        <b>Height:</b> {{m.dbpHeightMetric?.value}} {{m.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}
+                      </ng-container>
+                  </p>
+              </mat-card-content>
+                  
+              </mat-card>
+          
+          </div>
         </mat-expansion-panel>
         <mat-expansion-panel>
           <mat-expansion-panel-header>

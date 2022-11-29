@@ -16,6 +16,8 @@ export class MuseumDetailComponent implements OnInit {
   museumId!: string;
   museum!: Museum;
   artPieces: Art[] = [];
+  filteredArtPieces: Art[] = [];
+  searchTerm: string = '';
 
   selectedArtType!: String;
   startYear: number = 1400;
@@ -39,6 +41,7 @@ export class MuseumDetailComponent implements OnInit {
     this.museumId = this.route.snapshot.params.id;
     this.museum = (await this.queryService.findMuseumDetail(this.museumId));
     this.artPieces = await this.queryService.findArtOfMuseum(this.museumId);
+    this.filteredArtPieces = [...this.artPieces];
     this.shared.breadcrumbs = [
       {
         name: this.museum.name.value,
@@ -49,9 +52,16 @@ export class MuseumDetailComponent implements OnInit {
 
   async applyFilters() {
     this.artPieces = await this.queryService.findArtOfMuseum(this.museumId, {startYear: this.startYear, endYear: this.endYear});
+    this.filteredArtPieces = [...this.artPieces];
   }
 
   async removeFilters() {
     this.artPieces = await this.queryService.findArtOfMuseum(this.museumId);
+    this.filteredArtPieces = [...this.artPieces];
+  }
+
+  updateSearch(searchTerm: string) {
+    this.searchTerm = searchTerm;
+    this.filteredArtPieces = this.artPieces.filter(m => m.rdfsLabel.value.toLowerCase().includes(this.searchTerm.toLowerCase()));
   }
 }

@@ -8,34 +8,55 @@
     </div>
     <div>
         <h2>Click on an art piece that you want to look at</h2>
-        <div class="filter-bar">
-            <!-- <mat-form-field appearance="fill">
-                <mat-label>Favorite food</mat-label>
-                <mat-select>
-                  <mat-option *ngFor="let food of foods" [value]="food.value">
-                    {{food.viewValue}}
-                  </mat-option>
-                </mat-select>
-            </mat-form-field> -->
-            <div class="year-filter">
-                <h3>Filter by year</h3>
-                <ngx-slider [(value)]="startYear" [(highValue)]="endYear" [options]="options"></ngx-slider>
-            </div>
-            
-        </div>
-        <div style="display:flex;justify-content:space-between; margin-top: 20px;">
-            <div>
-                <button mat-raised-button color="primary" (click)="applyFilters()" style="margin-right: 10px;">Apply Filters</button>
-                <button mat-raised-button color="secondary" (click)="removeFilters()">Remove Filters</button>
-            </div>
-            
+        <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Filters
+                </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="filter-bar">
+                    <!-- <mat-form-field appearance="fill">
+                        <mat-label>Favorite food</mat-label>
+                        <mat-select>
+                        <mat-option *ngFor="let food of foods" [value]="food.value">
+                            {{food.viewValue}}
+                        </mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                    <div class="year-filter">
+                        <h3>Filter by year</h3>
+                        <ngx-slider [(value)]="startYear" [(highValue)]="endYear" [options]="options"></ngx-slider>
+                    </div>
+                    
+                </div>
+                <div style="display:flex;justify-content:space-between; margin-top: 20px; align-content: center;">
+                    <div>
+                        <button mat-raised-button color="primary" (click)="applyFilters()" style="margin-right: 10px;">Apply Filters</button>
+                        <button mat-raised-button color="secondary" (click)="removeFilters()">Remove Filters</button>
+                    </div>
+                    
+                    
+                </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+        <div style="
+            display:flex; 
+            justify-content: space-between; 
+            margin-top: 16px;
+            margin-bottom: 16px;
+        ">
+            <mat-form-field class="search-input" appearance="fill">
+                <mat-label>Search...</mat-label>
+                <input type="text" [ngModel]="searchTerm" (ngModelChange)="updateSearch($event)" matInput placeholder="e.g. Louvre">
+            </mat-form-field>
             <p class="result-message">Found {{artPieces.length}} art pieces</p>
         </div>
         <div class="art-container">
             <mat-card 
                 class="art-card" 
                 appearance="raised"
-                *ngFor="let art of artPieces" 
+                *ngFor="let art of filteredArtPieces" 
                 [routerLink]="'/museums/' + museumId + '/art/' + art.art.value.substring(28)"
             >
             
@@ -45,7 +66,11 @@
             </mat-card-header>
             <img width="300" mat-card-image src="{{art.dboThumbnail.value}}" alt=" Photo of {{art.rdfsLabel.value}}">
             <mat-card-content>
-                <p><b>Year:</b> {{art.dbpYear.value}}</p>
+                <p>
+                    <b>Artist:</b> {{art.dbpAuthorName?.value || ''}}  <br>
+                    <b>Year:</b> {{art.dbpYear?.value || ''}}
+                    
+                </p>
             </mat-card-content>
                 
                 

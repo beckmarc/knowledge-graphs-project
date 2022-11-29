@@ -9,4 +9,12 @@ export interface Art {
     dboThumbnail: RDFValue;
     dbpYear: RDFValue;
     rdfsLabel: RDFValue;
+    dbpAuthorName: RDFValue;
+    dbpCity: RDFValue; 
+    dbpHeightMetric: RDFValue; 
+    dbpMetricUnit: RDFValue; 
+    dbpWidthMetric: RDFValue; 
+    dbpCityName: RDFValue;
+    dboMuseum: RDFValue;
+    dbpMuseumName: RDFValue;
 }

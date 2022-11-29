@@ -34,11 +34,30 @@ export class QueryService {
   async findArtDetail(id: string, filters?: any): Promise<Art>{
     id = `<http://dbpedia.org/resource/${id}>`;
     const query = `
-    select distinct ?dboAbstract, ?dboThumbnail, ?rdfsLabel
+    select distinct 
+      ?dboAbstract, ?dboThumbnail, ?dboMuseum,
+      ?rdfsLabel, ?dbpYear, ?dbpAuthorName, ?dbpCity, ?dbpCityName, ?dbpHeightMetric, ?dbpMetricUnit, ?dbpWidthMetric
     where {
       ${id} rdfs:label ?rdfsLabel FILTER (langMatches(lang(?rdfsLabel),"en")) .
       ${id} dbo:thumbnail ?dboThumbnail .
-      ${id} dbo:abstract ?dboAbstract FILTER (langMatches(lang(?dboAbstract),"en"))
+      ${id} dbo:abstract ?dboAbstract FILTER (langMatches(lang(?dboAbstract),"en")) .
+      ${id} dbo:museum ?dboMuseum .
+      optional { ${id} dbp:year ?dbpYear }
+      optional { 
+        ${id} dbp:city ?dbpCity .
+        ?dbpCity dbp:name ?dbpCityName
+      }
+      optional { 
+        ${id} dbp:heightMetric ?dbpHeightMetric .
+        ${id} dbp:widthMetric ?dbpWidthMetric .
+      }
+      optional {
+        ${id} dbp:metricUnit ?dbpMetricUnit .
+      }
+      optional {
+        ${id} dbo:author ?dboAuthor .
+        ?dboAuthor dbp:name ?dbpAuthorName .
+      }
     }
     `;
     const queryResult = (await this.getRDF<Art>(query));
@@ -46,16 +65,50 @@ export class QueryService {
     return queryResult.results.bindings[0];
   }
 
+  async findArtWithSimilarDimensions(id: string, height: number, width: number, museumId: string): Promise<Art[]>{
+    id = `<http://dbpedia.org/resource/${id}>`;
+    museumId = `<http://dbpedia.org/resource/${museumId}>`;
+    const query = `
+    select distinct ?art, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, 
+      ?dboMuseum, ?dbpMuseumName, ?dbpHeightMetric, ?dbpMetricUnit, ?dbpWidthMetric
+    where {
+      ?art dbp:heightMetric ?dbpHeightMetric .
+      ?art dbp:widthMetric ?dbpWidthMetric .
+      ?art dbo:abstract ?dboAbstract .
+      ?art dbo:thumbnail ?dboThumbnail .
+      ?art rdfs:label ?rdfsLabel .
+      ?art dbo:museum ?dboMuseum .
+      ?dboMuseum dbp:name ?dbpMuseumName .
+      optional {
+        ${id} dbp:metricUnit ?dbpMetricUnit 
+      }
+      FILTER (langMatches(lang(?rdfsLabel ),"en"))
+      FILTER (langMatches(lang(?dbpMuseumName ),"en"))
+      FILTER (
+        ?dbpHeightMetric >= (${height * 0.90}) && ?dbpHeightMetric <= (${height * 1.1}) && 
+        ?dbpWidthMetric >= (${width * 0.90}) && ?dbpWidthMetric <= (${width * 1.1})
+      )
+      FILTER (${id} != $art)
+    }
+    `;
+    const queryResult = (await this.getRDF<Art>(query));
+    console.log(queryResult.results.bindings);
+    return queryResult.results.bindings;
+  }
+
   async findArtOfArtist(id: string, filters?: any): Promise<Art[]>{
     id = `<http://dbpedia.org/resource/${id}>`;
     const query = `
-    select distinct ?art, ?dboThumbnail, ?rdfsLabel, ?dboAuthor
+    select distinct ?art, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, ?dboMuseum, ?dbpMuseumName
     where {
       ${id} dbo:author $author .
       ?art dbo:author $author .
       ?art dbo:abstract ?dboAbstract .
       ?art dbo:thumbnail ?dboThumbnail .
       ?art rdfs:label ?rdfsLabel .
+      ?art dbo:museum ?dboMuseum .
+      ?dboMuseum dbp:name ?dbpMuseumName .
+      FILTER (langMatches(lang(?dbpMuseumName ),"en"))
       FILTER (langMatches(lang(?rdfsLabel ),"en"))
       FILTER (${id} != $art)
     }
@@ -68,20 +121,23 @@ export class QueryService {
   async findArtOfMuseum(id: string, filters?: any): Promise<Art[]>{
     id = `<http://dbpedia.org/resource/${id}>`;
     const query = `
-    select distinct ?art, ?dboAbstract, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, ?dbpYear
+    select distinct ?art, ?dboAbstract, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, ?dbpAuthorName, ?dbpYear
     where {
-      ?art dbo:museum ${id} .
-      ?art dbo:abstract ?dboAbstract .
+      ?art dbo:museum ${id} . 
       ?art dbo:thumbnail ?dboThumbnail .
       ?art rdfs:label ?rdfsLabel .
-      ?art dbp:year ?dbpYear .
+      ?art dbo:abstract ?dboAbstract .
       optional {
-      ?art dbo:author ?dboAuthor
+        ?art dbo:author ?dboAuthor .
+        ?dboAuthor dbp:name ?dbpAuthorName .
       }.
+      optional { ?art dbp:year ?dbpYear }
       FILTER (langMatches(lang(?dboAbstract),"en"))
       FILTER (langMatches(lang(?rdfsLabel ),"en"))
+      
       ${filters ? `FILTER (?dbpYear >= ${filters.startYear} && ?dbpYear <= ${filters.endYear})` : ''}
     }
+    ORDER BY ASC(?rdfsLabel)
     `;
     const queryResult = (await this.getRDF<Art>(query));
     console.log(queryResult.results.bindings);
@@ -92,12 +148,14 @@ export class QueryService {
     const query = `
     SELECT DISTINCT ?museum, ?name, ?thumbnail, ?abstract
     WHERE {  
-    ?museum dbo:type dbr:Art_museum .
-    ?museum rdfs:label ?name FILTER (langMatches(lang(?name),"en")) .
-    ?museum dbo:thumbnail ?thumbnail .
-    ?museum dbo:abstract ?abstract FILTER (langMatches(lang(?abstract),"en"))
-    OPTIONAL {?art dbo:museum ?museum . }
-    FILTER(BOUND(?art) )
+      ?museum dbo:type dbr:Art_museum .
+      ?museum rdfs:label ?name FILTER (langMatches(lang(?name),"en")) .
+      ?museum dbo:thumbnail ?thumbnail .
+      ?museum dbo:abstract ?abstract FILTER (langMatches(lang(?abstract),"en"))
+      OPTIONAL {
+        ?art dbo:museum ?museum . 
+      }
+      FILTER(BOUND(?art) )
     }
     ORDER BY ASC(?name)
     `;

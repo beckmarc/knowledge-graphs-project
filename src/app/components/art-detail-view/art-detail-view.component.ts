@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Art } from '../../model/art';
 import { Museum } from '../../model/museum';
 import { QueryService } from '../../services/query.service';
@@ -25,6 +25,7 @@ export class ArtDetailViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private queryService: QueryService,
     private shared: SharedService
   ) { }
@@ -44,7 +45,19 @@ export class ArtDetailViewComponent implements OnInit {
         link: 'museums/' + this.museumId + '/art/' + this.artId
       }
     ]
-    this.otherArtOfArtist = await this.queryService.findArtOfArtist(this.artId)
+    this.otherArtOfArtist = await this.queryService.findArtOfArtist(this.artId);
+    this.artWithSimilarDim = await this.queryService.findArtWithSimilarDimensions(
+      this.artId, 
+      parseInt(this.artPiece.dbpHeightMetric.value), 
+      parseInt(this.artPiece.dbpWidthMetric.value),
+      this.museum.museum.value
+    );
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+      // do some logic again when same url is clicked
+        window.location.reload();
+      }
+    });
   }
 
 }
