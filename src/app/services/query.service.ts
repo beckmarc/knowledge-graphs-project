@@ -65,9 +65,38 @@ export class QueryService {
     return queryResult.results.bindings[0];
   }
 
-  async findArtWithSimilarDimensions(id: string, height: number, width: number, museumId: string): Promise<Art[]>{
+  async findArtFromSimilarTimes(id: string, year: number): Promise<Art[]>{
+    console.log(year);
     id = `<http://dbpedia.org/resource/${id}>`;
-    museumId = `<http://dbpedia.org/resource/${museumId}>`;
+    const query = `
+    select distinct ?art, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, 
+      ?dboMuseum, ?dbpMuseumName, ?dbpHeightMetric, ?dbpMetricUnit, ?dbpWidthMetric, ?dbpYear
+    where {
+      ?art dbp:heightMetric ?dbpHeightMetric .
+      ?art dbp:widthMetric ?dbpWidthMetric .
+      ?art dbo:abstract ?dboAbstract .
+      ?art dbo:thumbnail ?dboThumbnail .
+      ?art rdfs:label ?rdfsLabel .
+      ?art dbo:museum ?dboMuseum .
+      ?art dbp:year ?dbpYear .
+      ?dboMuseum dbp:name ?dbpMuseumName .
+      optional {
+        ${id} dbp:metricUnit ?dbpMetricUnit 
+      }
+      FILTER (?dbpYear >= ${(year - 5)} && ?dbpYear <= ${Math.round((year + 5))})
+      FILTER (langMatches(lang(?rdfsLabel ),"en"))
+      FILTER (langMatches(lang(?dbpMuseumName ),"en"))
+      FILTER (${id} != $art)
+    }
+    `;
+    const queryResult = (await this.getRDF<Art>(query));
+    console.log(queryResult.results.bindings);
+    return queryResult.results.bindings;
+  }
+
+
+  async findArtWithSimilarDimensions(id: string, height: number, width: number): Promise<Art[]>{
+    id = `<http://dbpedia.org/resource/${id}>`;
     const query = `
     select distinct ?art, ?dboThumbnail, ?rdfsLabel, ?dboAuthor, 
       ?dboMuseum, ?dbpMuseumName, ?dbpHeightMetric, ?dbpMetricUnit, ?dbpWidthMetric

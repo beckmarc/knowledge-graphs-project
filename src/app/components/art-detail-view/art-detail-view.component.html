@@ -3,21 +3,24 @@
         <h1>{{artPiece.rdfsLabel.value}}</h1>
         <div style="display:flex;">
             <img src="{{artPiece.dboThumbnail.value}}">
-            <div style="margin-left: 30px;">
-              <p >
-                {{artPiece.dboAbstract.value}}
-              </p>
-              <hr>
-              <p>
-                <b>Artist:</b> {{artPiece.dbpAuthorName?.value || 'n.a.'}}  <br>
-                <b>Year:</b> {{artPiece.dbpYear?.value || 'n.a.'}} <br>
-                <b>City:</b> {{artPiece.dbpCityName?.value || 'n.a.'}} <br>
-                <ng-container *ngIf="artPiece.dbpWidthMetric && artPiece.dbpHeightMetric">
-                  <b>Width:</b> {{artPiece.dbpWidthMetric?.value}} {{artPiece.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}<br>
-                  <b>Height:</b> {{artPiece.dbpHeightMetric?.value}} {{artPiece.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}
-                </ng-container>
-                
-              </p>
+            <div style="margin-left: 30px;display: flex;flex-direction: column; justify-content: space-between;">
+              <div>
+                <p >
+                  {{artPiece.dboAbstract.value}}
+                </p>
+                <hr>
+                <p>
+                  <b>Artist:</b> {{artPiece.dbpAuthorName?.value || 'n.a.'}}  <br>
+                  <b>Year:</b> {{artPiece.dbpYear?.value || 'n.a.'}} <br>
+                  <b>City:</b> {{artPiece.dbpCityName?.value || 'n.a.'}} <br>
+                  <ng-container *ngIf="artPiece.dbpWidthMetric && artPiece.dbpHeightMetric">
+                    <b>Width:</b> {{artPiece.dbpWidthMetric?.value}} {{artPiece.dbpMetricUnit?.value || 'cm(*)'}}<br>
+                    <b>Height:</b> {{artPiece.dbpHeightMetric?.value}} {{artPiece.dbpMetricUnit?.value || 'cm(*)'}}
+                  </ng-container>
+                  
+                </p>
+              </div>
+              <p *ngIf="!artPiece.dbpMetricUnit?.value" style="color: grey; font-style: italic;">(*): Metric is unknown but likely to be centimeters.</p>
             </div>
             
         </div>    
@@ -32,6 +35,9 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div class="art-container">
+                <div *ngIf="otherArtOfArtist.length == 0" class="notfound">
+                  Sorry, we couldn't find any other art of this artist
+                </div>
                 <mat-card 
                     class="art-card" 
                     appearance="raised" 
@@ -61,6 +67,9 @@
             </mat-panel-title>
           </mat-expansion-panel-header>
           <div class="art-container">
+              <div *ngIf="artWithSimilarDim.length == 0" class="notfound">
+                Sorry, we couldn't find any art with similar dimensions
+              </div>
               <mat-card 
                   class="art-card" 
                   appearance="raised" 
@@ -76,8 +85,8 @@
                   <p>
                       <b>Museum:</b> {{m.dbpMuseumName?.value || 'n.a.'}}  <br>
                       <ng-container *ngIf="artPiece.dbpWidthMetric && artPiece.dbpHeightMetric">
-                        <b>Width:</b> {{m.dbpWidthMetric?.value}} {{m.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}<br>
-                        <b>Height:</b> {{m.dbpHeightMetric?.value}} {{m.dbpMetricUnit?.value || '(metric unknown probably (cm))'}}
+                        <b>Width:</b> {{m.dbpWidthMetric?.value}} {{m.dbpMetricUnit?.value || 'cm(*)'}}<br>
+                        <b>Height:</b> {{m.dbpHeightMetric?.value}} {{m.dbpMetricUnit?.value || 'cm(*)'}}
                       </ng-container>
                   </p>
               </mat-card-content>
@@ -92,7 +101,31 @@
               Show Art from the similar times
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <p>I'm visible because I am open</p>
+          <div class="art-container">
+            <div *ngIf="artFromSimilarTimes.length == 0" class="notfound">
+              Sorry, we couldn't find any art from similar times
+            </div>
+            <mat-card 
+                class="art-card" 
+                appearance="raised" 
+                *ngFor="let m of artFromSimilarTimes" 
+                [routerLink]="'/museums/' + m.dboMuseum.value.substring(28) + '/art/' + m.art.value.substring(28)"
+            >
+            
+                <img mat-card-image src="{{m.dboThumbnail.value}}" alt=" Photo of {{m.rdfsLabel.value}}">
+                <mat-card-header>
+                  <mat-card-title>{{m.rdfsLabel.value}}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <p>
+                    <b>Museum:</b> {{m.dbpMuseumName?.value || 'n.a.'}}  <br>
+                    <b>Year:</b> {{m.dbpYear?.value || 'n.a.'}}
+                </p>
+            </mat-card-content>
+                
+            </mat-card>
+        
+      </div>
         </mat-expansion-panel>
     </mat-accordion>
 </div>

@@ -1,5 +1,5 @@
 <mat-toolbar color="primary">
-  <button mat-button routerLink="museums">Home</button>
+  <button mat-button routerLink="museums"><mat-icon>home</mat-icon></button>
   <ng-container *ngFor="let b of shared.breadcrumbs">
     <mat-icon>chevron_right</mat-icon>
     <button mat-button [routerLink]="b.link">{{b.name}}</button>

@@ -46,15 +46,18 @@ export class ArtDetailViewComponent implements OnInit {
       }
     ]
     this.otherArtOfArtist = await this.queryService.findArtOfArtist(this.artId);
+    console.log(this.artPiece);
     this.artWithSimilarDim = await this.queryService.findArtWithSimilarDimensions(
       this.artId, 
       parseInt(this.artPiece.dbpHeightMetric.value), 
-      parseInt(this.artPiece.dbpWidthMetric.value),
-      this.museum.museum.value
+      parseInt(this.artPiece.dbpWidthMetric.value)
     );
+    this.artFromSimilarTimes = await this.queryService.findArtFromSimilarTimes(
+      this.artId, 
+      parseInt(this.artPiece.dbpYear.value.match(/\d+/)![0])
+    )
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-      // do some logic again when same url is clicked
         window.location.reload();
       }
     });
