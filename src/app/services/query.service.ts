@@ -184,7 +184,7 @@ export class QueryService {
       OPTIONAL {
         ?art dbo:museum ?museum . 
       }
-      FILTER(BOUND(?art) )
+      FILTER(BOUND(?art))
     }
     ORDER BY ASC(?name)
     `;
